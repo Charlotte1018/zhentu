@@ -1,6 +1,21 @@
 # my-project
 
-> A Vue.js project
+> ztll
+
+## 服务器
+
+``` bash
+# 服务器ip
+47.104.104.70
+# 密码
+
+# 域名
+http://ztll.fa123.com
+# 部署路径
+/opt/web/ztll
+# nginx配置路径
+/etc/nginx/conf.d
+```
 
 ## Build Setup
 
