@@ -6,7 +6,7 @@
                 <span>照片详情</span>
             </div>
             <div class="imgBox">
-                <img class="img border" src="" alt="time">
+                <img class="img" :src="info.preview_url" alt="time">
             </div>
             <div class="info">
                 <div class="middle">
@@ -61,12 +61,16 @@ import { http } from './utils/http';
 export default {
   created() {
     this.getInfo();
+    window.location.search.replace(/(=)(\d+)/g, ($0,$1,$2) => {
+        this.getcert_id = parseInt($2);
+        console.log('打印',parseInt($2));
+    });
   },
   data(){
     return {
         info:{},
         cert_id:8427,
-        show:false
+        show:false,
     }
   },
   components: {
@@ -76,8 +80,9 @@ export default {
   },
   methods:{
     getInfo(){
+    let cert_id = this.getcert_id|| this.cert_id;
       let msg = {
-        url:`http://beta.51zbb.net/ztll/cert/getinfo?cert_id=${this.cert_id}`
+        url:`http://beta.51zbb.net/ztll/cert/getinfo?cert_id=${cert_id}`
       }
       http(msg).then(res => {
           this.info = res;
@@ -154,18 +159,18 @@ export default {
         }
 
         .imgBox {
-            width:100%;
-            height:100%;
+            /* width:100%; */
+            /* height:100%; */
         }
 
         .img {
             /* height: 200px; */
             /*height: 0; padding-bottom: 50%;*/
-            width: 400px;
-            height:200px;
-            margin: 0 auto;
-            transform:rotate(90deg);
-            box-shadow: 2px 2px 10px rgba(128, 128, 128, 0.555);
+            width: 100%;
+            height:100%;
+            /* margin: 0 auto; */
+            /* transform:scale(0.5,0.5); */
+            box-shadow: 2px 2px 10px rgba(128, 128, 128, 0.637);
         }
 
         .info {
