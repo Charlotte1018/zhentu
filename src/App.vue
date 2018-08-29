@@ -35,7 +35,7 @@
                     <span style="margin-left:8px;">数据指纹</span>
                 </div>
                 
-                <van-button type="default" plain @click="show=!show">查看</van-button>
+                <button class="btn" type="default" plain @click="show=!show">查看</button>
             </div>
             <div>
                 <van-dialog
@@ -55,21 +55,24 @@
 
 <script>
 import Vue from 'vue';
-import { Cell, CellGroup, Icon, Dialog, Field} from 'vant';
+import { Cell, CellGroup, Icon, Dialog, Field, Button} from 'vant';
+import { Toast } from 'vant';
 Vue.use(Dialog,Field);
+Vue.use(Button);
 import { http } from './utils/http';
 export default {
+    beforeCreate(){
+        window.location.search.replace(/(=)(.+)/g, ($0,$1,$2) => {
+            this.getcert_id = $2;
+        });
+    },
   created() {
     this.getInfo();
-    window.location.search.replace(/(=)(\d+)/g, ($0,$1,$2) => {
-        this.getcert_id = parseInt($2);
-        console.log('打印',parseInt($2));
-    });
   },
   data(){
     return {
         info:{},
-        cert_id:8427,
+        cert_id:'8428',
         show:false,
     }
   },
@@ -87,6 +90,8 @@ export default {
       http(msg).then(res => {
           this.info = res;
           console.log(res);
+      },rej => {
+          Toast('您的二维码已过期');
       });
     },
     dataHash(){
@@ -97,14 +102,14 @@ export default {
             // on close
         });
     },
-    beforeClose(action){
+    beforeClose(action, done){
+        let _this = this;
         if (action === 'confirm') {
-            let _this = this;
-            setTimeout(()=>{
-                _this.show = false;
-            }, 100);
+            this.show = false;
+            setTimeout(done, 100);
         } else {
             this.show = false;
+            done();
         }
     }
   }
@@ -196,5 +201,8 @@ export default {
         .textarea{
             width:90%;
             margin-left:5%;
+        }
+        .btn{
+            border:none;
         }
 </style>
