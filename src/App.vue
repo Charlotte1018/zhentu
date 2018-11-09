@@ -5,7 +5,7 @@
             <div class="title">
                 <span>照片详情</span>
             </div>
-            <div class="imgBox">
+            <div class="imgBox" @click="viewImage">
                 <img class="img" :src="info.preview_url" alt="time">
             </div>
             <div class="info">
@@ -49,160 +49,185 @@
                 </van-dialog>
             </div>
         </div>
+        <div :class="{ fit_wrap: isActive }" @click="viewImage">
+            <img class="fit" :src="info.source_url" alt="">
+        </div>
     </div>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import { Cell, CellGroup, Icon, Dialog, Field, Button} from 'vant';
-import { Toast } from 'vant';
-Vue.use(Dialog,Field);
+import Vue from "vue";
+import { Cell, CellGroup, Icon, Dialog, Field, Button } from "vant";
+import { Toast } from "vant";
+Vue.use(Dialog, Field);
 Vue.use(Button);
-import { http } from './utils/http';
+import { http } from "./utils/http";
 export default {
-    beforeCreate(){
-        window.location.search.replace(/(=)(.+)/g, ($0,$1,$2) => {
-            this.getcert_id = $2;
-        });
-    },
+  beforeCreate() {
+    window.location.search.replace(/(=)(.+)/g, ($0, $1, $2) => {
+      this.getcert_id = $2;
+    });
+  },
   created() {
     this.getInfo();
   },
-  data(){
+  data() {
     return {
-        info:{},
-        cert_id:'8428',
-        show:false,
-    }
+      info: {},
+      cert_id: "8428",
+      show: false,
+      isActive: true
+    };
   },
   components: {
     [Cell.name]: Cell,
     [CellGroup.name]: CellGroup,
     [Icon.name]: Icon
   },
-  methods:{
-    getInfo(){
-    let cert_id = this.getcert_id|| this.cert_id;
+  methods: {
+    getInfo() {
+      let cert_id = this.getcert_id || this.cert_id;
       let msg = {
-        url:`http://beta.51zbb.net/ztll/cert/getinfo?cert_id=${cert_id}`
-      }
-      http(msg).then(res => {
+        url: `http://beta.51zbb.net/ztll/cert/getinfo?cert_id=${cert_id}`
+      };
+      http(msg).then(
+        res => {
           this.info = res;
           console.log(res);
-      },rej => {
-          Toast('您的二维码已过期');
+        },
+        rej => {
+          Toast("您的二维码已过期");
+        }
+      );
+    },
+    dataHash() {
+      Dialog.alert({
+        title: "数字指纹",
+        message: this.info.hash
+      }).then(() => {
+        // on close
       });
     },
-    dataHash(){
-        Dialog.alert({
-            title: '数字指纹',
-            message: this.info.hash
-            }).then(() => {
-            // on close
-        });
+    beforeClose(action, done) {
+      let _this = this;
+      if (action === "confirm") {
+        this.show = false;
+        setTimeout(done, 100);
+      } else {
+        this.show = false;
+        done();
+      }
     },
-    beforeClose(action, done){
-        let _this = this;
-        if (action === 'confirm') {
-            this.show = false;
-            setTimeout(done, 100);
-        } else {
-            this.show = false;
-            done();
-        }
+    viewImage() {
+        this.isActive = !this.isActive;
     }
   }
 };
 </script>
 
 <style>
-        body {
-          background-color: #fff;
-        }
+.fit_wrap {
+  display: none;
+  overflow: scroll;
+}
+.fit {
+  object-fit: fill;
+  width: 100vh;
+  height: 100vh;
+  transform: translate(-50%, -50%);
+  /* transform: rotate(90deg); */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: grey;
+}
+body {
+  background-color: #fff;
+}
 
-        .center {
-            text-align: center;
-        }
+.center {
+  text-align: center;
+}
 
-        .middle {
-            flex:1;
-        }
+.middle {
+  flex: 1;
+}
 
-        .df {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-        }
+.df {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
 
-        .ml {
-            margin-left: 10%;
-            /* vertical-align: middle; */
-        }
+.ml {
+  margin-left: 10%;
+  /* vertical-align: middle; */
+}
 
-        html {
-            font-size: 14px;
-        }
+html {
+  font-size: 14px;
+}
 
-        .border {
-            border: 1px solid red;
-        }
+.border {
+  border: 1px solid red;
+}
 
-        .content {
-            width: 90%;
-            margin: 0 auto;
-        }
+.content {
+  width: 90%;
+  margin: 0 auto;
+}
 
-        .box {
-            /* height: 50px; */
-        }
+.box {
+  /* height: 50px; */
+}
 
-        .title {
-            font-size: 20px;
-            padding: 10px 0;
-            text-align: center;
-        }
+.title {
+  font-size: 20px;
+  padding: 10px 0;
+  text-align: center;
+}
 
-        .imgBox {
-            /* width:100%; */
-            /* height:100%; */
-        }
+.imgBox {
+  /* width:100%; */
+  /* height:100%; */
+}
 
-        .img {
-            /* height: 200px; */
-            /*height: 0; padding-bottom: 50%;*/
-            width: 100%;
-            height:100%;
-            /* margin: 0 auto; */
-            /* transform:scale(0.5,0.5); */
-            box-shadow: 2px 2px 10px rgba(128, 128, 128, 0.637);
-        }
+.img {
+  /* height: 200px; */
+  /*height: 0; padding-bottom: 50%;*/
+  width: 100%;
+  height: 100%;
+  /* margin: 0 auto; */
+  /* transform:scale(0.5,0.5); */
+  box-shadow: 2px 2px 10px rgba(128, 128, 128, 0.637);
+}
 
-        .info {
-            display: flex;
-            color: #8290A9;
-            justify-content: space-between;
-            align-items: center;
-            padding: 25px 0 0 0;
-        }
+.info {
+  display: flex;
+  color: #8290a9;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 0 0 0;
+}
 
-        .text {
-            color: #1076F0;
-            flex: 2;
-            text-align: right;
-            text-overflow: ellipsis
-        }
+.text {
+  color: #1076f0;
+  flex: 2;
+  text-align: right;
+  text-overflow: ellipsis;
+}
 
-        .icon {
-            transform: scale(0.7);
-            vertical-align: middle;
-            flex:1;
-        }
-        .textarea{
-            width:90%;
-            margin-left:5%;
-        }
-        .btn{
-            border:none;
-        }
+.icon {
+  transform: scale(0.7);
+  vertical-align: middle;
+  flex: 1;
+}
+.textarea {
+  width: 90%;
+  margin-left: 5%;
+}
+.btn {
+  border: none;
+}
 </style>

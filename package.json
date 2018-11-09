@@ -12,6 +12,7 @@
   "dependencies": {
     "vant": "^1.0.1",
     "vant-css": "^1.0.1",
+    "viewerjs": "^1.2.0",
     "vue": "^2.5.16",
     "vue-router": "^3.0.0"
   },
